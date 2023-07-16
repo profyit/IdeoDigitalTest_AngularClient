@@ -1,0 +1,93 @@
+
+<p-toast></p-toast>
+
+<div class="card">
+    <p-toolbar styleClass="p-mb-4">
+        <ng-template pTemplate="left">
+            <button pButton pRipple label="New" icon="pi pi-plus" class="p-button-success p-mr-2" (click)="openNew()"></button>
+    
+        </ng-template>
+
+       
+    </p-toolbar>
+    <div class="mb-3">  
+        <p-button type="button" icon="pi pi-refresh" (click)="reset()" styleClass="p-button-text"></p-button>
+    </div>
+    <p-table #dt [value]="Invoices" [rows]="10" [paginator]="true" [globalFilterFields]="['invoiceName', 'amount', 'createdAt', 'invoiceTypeDesc']"
+        [(selection)]="selectedInvoices" [rowHover]="true" dataKey="invoiceId"  
+         [loading]="loading"
+  
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [showCurrentPageReport]="true">
+        <ng-template pTemplate="caption">
+            <div class="p-d-flex p-ai-center p-jc-between">
+                <h5 class="p-m-0">Manage Invoices</h5>
+                <span class="p-input-icon-left">
+                    <i class="pi pi-search"></i>
+                    <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')" placeholder="Search..." />
+                </span>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <!-- <th style="width: 3rem">
+                    <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                </th> -->
+                <th pSortableColumn="invoiceName" style="min-width:15rem">Invoice Name <p-sortIcon field="invoiceName"></p-sortIcon></th>
+                <th pSortableColumn="amount">Amount <p-sortIcon field="age"></p-sortIcon></th>
+                <th pSortableColumn="createdAt" style="min-width:10rem">CreatedAt <p-sortIcon field="createdAt"></p-sortIcon></th>
+                <th pSortableColumn="invoiceTypeDesc">Invoice Type Name <p-sortIcon field="invoiceTypeDesc"></p-sortIcon></th>
+               
+                <th></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-Invoice>
+            <tr>
+                <!-- <td>
+                    <p-tableCheckbox [value]="Invoice"></p-tableCheckbox>
+                </td> -->
+                <td>{{ Invoice.invoiceName }}</td>
+                <td>{{ Invoice.amount }}</td>
+                <td>{{ Invoice.createdAt }}</td>
+                <td>{{ Invoice.invoiceTypeDesc }}</td>
+                <td>
+                    <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success p-mr-2" (click)="editInvoice(Invoice)"></button>
+                    <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning" (click)="deleteInvoice(Invoice)"></button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="summary">
+            <div class="p-d-flex p-ai-center p-jc-between">
+                In total there are {{Invoices ? Invoices.length : 0 }} Invoices.
+            </div>
+        </ng-template>
+    </p-table>
+</div>
+
+<p-dialog [(visible)]="InvoicesDialog" *ngIf="InvoicesDialog" [style]="{width: '50vw', height: '500px'} " header="Invoices Details" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="content">
+        <div class="p-field">
+            <label for="name">Invoice Name</label>
+            <input type="text" pInputText id="name" [(ngModel)]="Invoice.invoiceName" required autofocus />
+            <small class="p-invalid" *ngIf="submitted && !Invoice.invoiceName">Name is required.</small>
+        </div>
+        <div class="p-field">
+            <label for="name">Amount</label>
+            <input type="number" pInputText id="age" pKeyFilter="int" [(ngModel)]="Invoice.amount" required autofocus />
+            <small class="p-invalid" *ngIf="submitted && !Invoice.amount">Amount is required.</small>
+        </div>
+        <div class="p-field">
+            <label for="name">Invoice Type</label>
+            <p-dropdown [options]="InvoiceTypes" [(ngModel)]="selectedInvoiceType" optionLabel="name"></p-dropdown>
+        </div>
+        
+          
+    
+    </ng-template>
+    
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+        <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="saveInvoice()"></button>
+    </ng-template>
+</p-dialog>
+
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
